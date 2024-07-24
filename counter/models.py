@@ -3,8 +3,8 @@ from django.db import models
 class JarCount(models.Model):
     count = models.IntegerField()
     timestamp = models.DateTimeField(auto_now_add=True)
-    shift1_start = models.TimeField()
-    shift2_start = models.TimeField()
+    shift1_start = models.TimeField(default="08:00")
+    shift2_start = models.TimeField(default="20:00")
 
     class Meta:
         indexes = [
