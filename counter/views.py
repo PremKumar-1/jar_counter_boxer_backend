@@ -400,17 +400,17 @@ def update_jar_count(request):
         return JsonResponse({'status': 'fail', 'reason': 'Invalid request method'}, status=405)
 """
 
-from rest_framework import viewsets, pagination
+from rest_framework import viewsets, pagination, status
 from rest_framework.decorators import action
 from rest_framework.response import Response
 from django.http import JsonResponse
 from django.views.decorators.csrf import csrf_exempt
 import json
 from django.utils.dateparse import parse_date
-from django.db.models import Sum, Q
-from datetime import datetime, timedelta
+from django.db.models import Sum
+from datetime import datetime, timedelta, time
 from .models import JarCount, ShiftTiming
-from .serializers import JarCountSerializer
+from .serializers import JarCountSerializer, ShiftTimingSerializer
 import logging
 from .pagination import RelativeUrlPagination
 import pytz
