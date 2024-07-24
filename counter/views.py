@@ -409,7 +409,7 @@ import json
 from django.utils.dateparse import parse_date
 from django.db.models import Sum, Q
 from datetime import datetime, timedelta
-from .models import JarCount
+from .models import JarCount, ShiftTiming
 from .serializers import JarCountSerializer
 import logging
 from .pagination import RelativeUrlPagination
