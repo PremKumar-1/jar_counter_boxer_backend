@@ -483,7 +483,7 @@ class ShiftTimingViewSet(viewsets.ModelViewSet):
         self.perform_update(serializer)
         return Response(serializer.data)
 
-@csrf_exempt
+"""@csrf_exempt
 def update_jar_count(request):
     if request.method == 'POST':
         try:
@@ -521,6 +521,48 @@ def update_jar_count(request):
             return JsonResponse({'status': 'success'})
         except json.JSONDecodeError as e:
             logger.error(f'Invalid JSON: {e}')
+            return JsonResponse({'status': 'fail', 'reason': 'Invalid JSON'}, status=400)
+        except Exception as e:
+            logger.error(f"Error in update_jar_count: {str(e)}")
+            return JsonResponse({'status': 'fail', 'reason': str(e)}, status=400)
+    elif request.method == 'GET':
+        return JsonResponse({'status': 'info', 'message': 'Use POST to update jar count'}, status=200)
+    else:
+        return JsonResponse({'status': 'fail', 'reason': 'Invalid request method'}, status=405)
+"""
+
+@csrf_exempt
+def update_jar_count(request):
+    if request.method == 'POST':
+        try:
+            data = json.loads(request.body)
+            jar_count = data.get('jar_count')
+            timestamp = data.get('timestamp')
+
+            if timestamp:
+                central = pytz.timezone('America/Chicago')
+                timestamp = datetime.fromisoformat(timestamp)
+                if timestamp.tzinfo is None:
+                    timestamp = timezone.make_aware(timestamp, timezone=central)
+                else:
+                    timestamp = timestamp.astimezone(central)
+
+            if jar_count is not None:
+                shift_timings = ShiftTiming.objects.first()
+                if not shift_timings:
+                    shift_timings = ShiftTiming.objects.create()
+
+                JarCount.objects.create(
+                    count=jar_count,
+                    timestamp=timestamp,
+                    shift1_start=shift_timings.shift1_start,
+                    shift2_start=shift_timings.shift2_start
+                )
+
+                return JsonResponse({'status': 'success'})
+            else:
+                return JsonResponse({'status': 'fail', 'reason': 'Invalid data'}, status=400)
+        except json.JSONDecodeError:
             return JsonResponse({'status': 'fail', 'reason': 'Invalid JSON'}, status=400)
         except Exception as e:
             logger.error(f"Error in update_jar_count: {str(e)}")
